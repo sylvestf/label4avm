@@ -1,16 +1,13 @@
 import argparse
 import codecs
-import contextlib
-import io
 import os
 import os.path as osp
 import sys
-import traceback
 
 import yaml
 from loguru import logger
-from PyQt5 import QtCore
-from PyQt5 import QtWidgets
+from qtpy import QtCore
+from qtpy import QtWidgets
 
 from labelme import __appname__
 from labelme import __version__
@@ -18,28 +15,6 @@ from labelme.app import MainWindow
 from labelme.config import get_config
 from labelme.utils import newIcon
 
-
-class _LoggerIO(io.StringIO):
-    def write(self, message: str) -> int:
-        if stripped_message := message.strip():
-            logger.debug(stripped_message)
-        return len(message)
-
-    def flush(self) -> None:
-        pass
-
-    def writable(self) -> bool:
-        return True
-
-    def readable(self) -> bool:
-        return False
-
-    def seekable(self) -> bool:
-        return False
-
-    @property
-    def closed(self) -> bool:
-        return False
 
 
 def _setup_loguru(logger_level: str) -> None:
@@ -53,13 +28,30 @@ def _setup_loguru(logger_level: str) -> None:
 
     cache_dir: str
     if os.name == "nt":
-        cache_dir = os.path.join(os.environ["LOCALAPPDATA"], "labelme")
+        cache_dir = os.path.join(os.environ["LOCALAPPDATA"], "Aperdata.ai.labelavm")
     else:
-        cache_dir = os.path.expanduser("~/.cache/labelme")
+        cache_dir = os.path.expanduser("~/.cache/Aperdata.ai.labelavm")
+    # os.makedirs(cache_dir, exist_ok=True)
 
-    os.makedirs(cache_dir, exist_ok=True)
+    # log_file = os.path.join(cache_dir, "Aperdata.ai.labelavm.log")
 
-    log_file = os.path.join(cache_dir, "labelme.log")
+    # 获取当前脚本所在目录
+    # current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 创建 log 文件夹
+    # log_dir = os.path.join(current_dir, "log")
+    log_dir = cache_dir
+    os.makedirs(log_dir, exist_ok=True)
+    
+    # 创建以时间戳命名的子文件夹
+    import datetime
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_subdir = os.path.join(log_dir, "Aperdata.ai_log_"+timestamp)
+    os.makedirs(log_subdir, exist_ok=True)
+
+    # 设置日志文件路径
+    log_file = os.path.join(log_subdir, "Aperdata.ai.labelavm.log")
+    
     logger.add(
         log_file,
         colorize=True,
@@ -71,28 +63,6 @@ def _setup_loguru(logger_level: str) -> None:
         backtrace=True,
         diagnose=True,
     )
-
-
-def _handle_exception(exc_type, exc_value, exc_traceback):
-    if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        sys.exit(0)
-
-    traceback_str: str = "".join(
-        traceback.format_exception(exc_type, exc_value, exc_traceback)
-    )
-    logger.critical(traceback_str)
-
-    traceback_html: str = traceback_str.replace("\n", "<br/>").replace(" ", "&nbsp;")
-    QtWidgets.QMessageBox.critical(
-        None,
-        "Error",
-        f"An unexpected error occurred. The application will close.<br/><br/>Please report issues following the <a href='https://labelme.io/docs/troubleshoot'>Troubleshoot</a>.<br/><br/>{traceback_html}",  # noqa: E501
-    )
-
-    if app := QtWidgets.QApplication.instance():
-        app.quit()
-    sys.exit(1)
 
 
 def main():
@@ -188,9 +158,6 @@ def main():
         sys.exit(0)
 
     _setup_loguru(logger_level=args.logger_level.upper())
-    logger.info("Starting {} {}", __appname__, __version__)
-
-    sys.excepthook = _handle_exception
 
     if hasattr(args, "flags"):
         if os.path.isfile(args.flags):
@@ -258,7 +225,7 @@ def main():
         win.settings.clear()
         sys.exit(0)
 
-    with contextlib.redirect_stderr(new_target=_LoggerIO()):
+    with logger.catch():
         win.show()
         win.raise_()
         sys.exit(app.exec_())

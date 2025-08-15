@@ -2,8 +2,8 @@
 
 import html
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
+from qtpy import QtWidgets
+from qtpy.QtCore import Qt
 
 from .escapable_qlist_widget import EscapableQListWidget
 
@@ -17,7 +17,8 @@ class UniqueLabelQListWidget(EscapableQListWidget):
     def findItemByLabel(self, label):
         for row in range(self.count()):
             item = self.item(row)
-            if item.data(Qt.UserRole) == label:  # type: ignore[attr-defined,union-attr]
+            if item.data(Qt.UserRole) == label:
+                # print("========widgets.unique_label_qlist_widget.findItemByLabel============", item)
                 return item
 
     def createItemFromLabel(self, label):
@@ -25,7 +26,7 @@ class UniqueLabelQListWidget(EscapableQListWidget):
             raise ValueError("Item for label '{}' already exists".format(label))
 
         item = QtWidgets.QListWidgetItem()
-        item.setData(Qt.UserRole, label)  # type: ignore[attr-defined]
+        item.setData(Qt.UserRole, label)
         return item
 
     def setItemLabel(self, item, label, color=None):
@@ -38,7 +39,7 @@ class UniqueLabelQListWidget(EscapableQListWidget):
                     html.escape(label), *color
                 )
             )
-        qlabel.setAlignment(Qt.AlignBottom)  # type: ignore[attr-defined]
+        qlabel.setAlignment(Qt.AlignBottom)
 
         item.setSizeHint(qlabel.sizeHint())
 

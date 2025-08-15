@@ -6,6 +6,7 @@ keep_prev_scale: false
 keep_prev_brightness: false
 keep_prev_contrast: false
 logger_level: info
+scale_factor_suofangyinzi: 0.9
 
 flags: null
 label_flags: null
@@ -13,11 +14,37 @@ labels: null
 file_search: null
 sort_labels: true
 validate_label: null
+attrs: null
+attributs: null
 
 default_shape_color: [0, 255, 0]
-shape_color: auto  # null, 'auto', 'manual'
+shape_color: manual  # null, 'auto', 'manual'
 shift_auto_shape_color: 0
-label_colors: null
+label_colors:
+  Background: [70, 70, 70]
+  Road: [128, 64, 128]
+  Person: [220, 20, 60]
+  Traffic_cone: [153, 153, 153]
+  Car: [0, 0, 142]
+  Movable_obstacle: [119, 11, 32]
+  Immovable_obstacle: [190, 153, 153]
+  Lane_line: [240, 240, 240]
+  Parking_line: [70, 120, 120]
+  Parking_slot: [70, 12, 120]
+  Arrow: [70, 120, 12]
+  Crosswalk_line: [0, 120, 120]
+  No_parking_sign_line: [200, 120, 120]
+  Speed_bump: [70, 200, 120]
+  Parking_lock_open: [70, 120, 200]
+  Parking_lock_closed: [100, 0, 0]
+  Parking_rod: [250, 120, 120]
+  Limiter_pole: [70, 0, 250]
+  Curb: [140, 100, 100]
+  Guide_line: [160, 160, 160]
+  Center_lane: [170, 10, 10]
+  Cover: [170, 170, 170]
+  sewer: [100, 20, 10]
+  self_car: [20, 180, 80]
 
 shape:
   # drawing
@@ -31,7 +58,7 @@ shape:
   point_size: 8
 
 ai:
-  default: 'Sam2 (balanced)'
+  default: 'EfficientSam (accuracy)'
 
 # main
 flag_dock:

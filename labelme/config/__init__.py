@@ -12,7 +12,7 @@ def update_dict(target_dict, new_dict, validate_item=None):
         if validate_item:
             validate_item(key, value)
         if key not in target_dict:
-            logger.warning("Skipping unexpected key in config: {}".format(key))
+            logger.warn("Skipping unexpected key in config: {}".format(key))
             continue
         if isinstance(target_dict[key], dict) and isinstance(value, dict):
             update_dict(target_dict[key], value, validate_item=validate_item)
@@ -25,6 +25,7 @@ def update_dict(target_dict, new_dict, validate_item=None):
 
 def get_default_config():
     config_file = osp.join(here, "default_config.yaml")
+    # config_file = osp.join(r"D:\fsy\miniconda3\envs\labelme\Lib\site-packages\labelme\config", "default_config.yaml")
     with open(config_file) as f:
         config = yaml.safe_load(f)
 
@@ -34,7 +35,7 @@ def get_default_config():
         try:
             shutil.copy(config_file, user_config_file)
         except Exception:
-            logger.warning("Failed to save config: {}".format(user_config_file))
+            logger.warn("Failed to save config: {}".format(user_config_file))
 
     return config
 
